@@ -20,6 +20,7 @@ package com.googlecode.lanterna.gui2;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.graphics.Theme;
+import com.googlecode.lanterna.gui2.menu.MenuBar2;
 import com.googlecode.lanterna.input.KeyStroke;
 
 /**
@@ -161,4 +162,18 @@ public interface BasePane extends Composite {
      * @param theme {@link Theme} to assign to this base pane/window, or {@code null} to reset
      */
     void setTheme(Theme theme);
+
+    /**
+     * Sets the active {@link MenuBar2} for this base pane/window. The menu will be rendered at the top (inside the
+     * window decorations if set on a window), if set. If called with {@code null}, any previously set menu bar is
+     * removed.
+     * @param menubar The {@link MenuBar2} to assign to this pane/window
+     */
+    void setMenuBar(MenuBar2 menubar);
+
+    /**
+     * Returns the {@link MenuBar2} assigned to this base pane/window, if any, otherwise returns {code null}.
+     * @return The active menu bar or {@code null}
+     */
+    MenuBar2 getMenuBar();
 }

@@ -21,6 +21,7 @@ package com.googlecode.lanterna.gui2;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.graphics.Theme;
+import com.googlecode.lanterna.gui2.menu.MenuBar2;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.input.MouseAction;
@@ -41,6 +42,7 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
     private boolean invalid;
     private boolean strictFocusChange;
     private boolean enableDirectionBasedMovements;
+    private MenuBar2 menuBar;
     private Theme theme;
 
     protected AbstractBasePane() {
@@ -50,6 +52,7 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
         this.invalid = false;
         this.strictFocusChange = false;
         this.enableDirectionBasedMovements = true;
+        this.menuBar = null;
         this.theme = null;
     }
 
@@ -70,13 +73,23 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
     public void draw(TextGUIGraphics graphics) {
         graphics.applyThemeStyle(getTheme().getDefinition(Window.class).getNormal());
         graphics.fill(' ');
-        contentHolder.draw(graphics);
 
         if(!interactableLookupMap.getSize().equals(graphics.getSize())) {
             interactableLookupMap = new InteractableLookupMap(graphics.getSize());
         } else {
             interactableLookupMap.reset();
         }
+
+        MenuBar2 menuBar = this.menuBar;
+        if (menuBar != null) {
+            TextGUIGraphics menuGraphics = graphics.newTextGraphics(TerminalPosition.TOP_LEFT_CORNER, graphics.getSize().withRows(1));
+            menuBar.draw(menuGraphics);
+            graphics = graphics.newTextGraphics(TerminalPosition.TOP_LEFT_CORNER.withRelativeRow(1), graphics.getSize().withRelativeRows(-1));
+
+            // Update interactableLookupMap
+        }
+
+        contentHolder.draw(graphics);
         contentHolder.updateLookupMap(interactableLookupMap);
         //interactableLookupMap.debug();
         invalid = false;
@@ -315,6 +328,17 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
     @Override
     public synchronized void setTheme(Theme theme) {
         this.theme = theme;
+    }
+
+    @Override
+    public MenuBar2 getMenuBar() {
+        return menuBar;
+    }
+
+    @Override
+    public void setMenuBar(MenuBar2 menuBar) {
+        this.menuBar = menuBar;
+        invalidate();
     }
 
     protected void addBasePaneListener(BasePaneListener<T> basePaneListener) {

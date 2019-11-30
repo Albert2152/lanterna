@@ -23,6 +23,7 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.bundle.LanternaThemes;
 import com.googlecode.lanterna.graphics.Theme;
 import com.googlecode.lanterna.graphics.ThemeDefinition;
+import com.googlecode.lanterna.gui2.menu.MenuBar2;
 
 /**
  * AbstractComponent provides some good default behaviour for a {@code Component}, all components in Lanterna extends

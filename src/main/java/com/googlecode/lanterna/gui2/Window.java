@@ -19,6 +19,7 @@
 package com.googlecode.lanterna.gui2;
 
 import com.googlecode.lanterna.TerminalPosition;
+import com.googlecode.lanterna.gui2.menu.MenuBar2;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.TerminalSize;
 
@@ -361,5 +362,21 @@ public interface Window extends BasePane {
      * @param position Position expressed in global coordinates to translate to local coordinates of this Window
      * @return The global coordinates expressed as local coordinates
      */
+    @Override
     TerminalPosition fromGlobal(TerminalPosition position);
+
+    /**
+     * Sets the active {@link MenuBar2} for this window. The menu will be rendered at the top, inside the window
+     * decorations, if set. If called with {@code null}, any previously set menu bar is removed.
+     * @param menubar The {@link MenuBar2} to assign to this window
+     */
+    @Override
+    void setMenuBar(MenuBar2 menubar);
+
+    /**
+     * Returns the {@link MenuBar2} assigned to this window, if any, otherwise returns {code null}.
+     * @return The active menu bar or {@code null}
+     */
+    @Override
+    MenuBar2 getMenuBar();
 }

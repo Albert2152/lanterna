@@ -57,15 +57,18 @@ public class MenuBar2 extends AbstractComponent<MenuBar2> {
 
             int leftPosition = EXTRA_PADDING;
             int remainingSpace = graphics.getSize().getColumns() - EXTRA_PADDING;
-            for (int i = 0; i < menuBar.getMenuCount(); i++) {
+            for (int i = 0; i < menuBar.getMenuCount() && remainingSpace > 0; i++) {
                 Menu2 menu = menuBar.getMenu(i);
                 TerminalSize preferredSize = menu.getPreferredSize();
                 menu.setPosition(menu.getPosition()
                         .withColumn(leftPosition)
                         .withRow(0));
+                int finalWidth = Math.min(preferredSize.getColumns(), remainingSpace);
                 menu.setSize(menu.getSize()
-                                .withColumns(Math.min(preferredSize.getColumns(), remainingSpace))
+                                .withColumns(finalWidth)
                                 .withRows(graphics.getSize().getRows()));
+                remainingSpace -= finalWidth + EXTRA_PADDING;
+                leftPosition += finalWidth + EXTRA_PADDING;
                 TextGUIGraphics componentGraphics = graphics.newTextGraphics(menu.getPosition(), menu.getSize());
                 menu.draw(componentGraphics);
             }
