@@ -42,7 +42,6 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
     private boolean invalid;
     private boolean strictFocusChange;
     private boolean enableDirectionBasedMovements;
-    private MenuBar2 menuBar;
     private Theme theme;
 
     protected AbstractBasePane() {
@@ -52,7 +51,6 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
         this.invalid = false;
         this.strictFocusChange = false;
         this.enableDirectionBasedMovements = true;
-        this.menuBar = null;
         this.theme = null;
     }
 
@@ -78,15 +76,6 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
             interactableLookupMap = new InteractableLookupMap(graphics.getSize());
         } else {
             interactableLookupMap.reset();
-        }
-
-        MenuBar2 menuBar = this.menuBar;
-        if (menuBar != null) {
-            TextGUIGraphics menuGraphics = graphics.newTextGraphics(TerminalPosition.TOP_LEFT_CORNER, graphics.getSize().withRows(1));
-            menuBar.draw(menuGraphics);
-            graphics = graphics.newTextGraphics(TerminalPosition.TOP_LEFT_CORNER.withRelativeRow(1), graphics.getSize().withRelativeRows(-1));
-
-            // Update interactableLookupMap
         }
 
         contentHolder.draw(graphics);
@@ -332,13 +321,12 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
 
     @Override
     public MenuBar2 getMenuBar() {
-        return menuBar;
+        return contentHolder.getMenuBar();
     }
 
     @Override
     public void setMenuBar(MenuBar2 menuBar) {
-        this.menuBar = menuBar;
-        invalidate();
+        contentHolder.setMenuBar(menuBar);
     }
 
     protected void addBasePaneListener(BasePaneListener<T> basePaneListener) {
@@ -354,6 +342,49 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
     }
 
     protected class ContentHolder extends AbstractComposite<Container> {
+        private MenuBar2 menuBar;
+
+        ContentHolder() {
+            this.menuBar = new EmptyMenuBar();
+        }
+
+        private void setMenuBar(MenuBar2 menuBar) {
+            if (menuBar == null) {
+                menuBar = new EmptyMenuBar();
+            }
+
+            if (this.menuBar != menuBar) {
+                menuBar.onAdded(this);
+                this.menuBar.onRemoved(this);
+                this.menuBar = menuBar;
+                if(focusedInteractable == null) {
+                    setFocusedInteractable(menuBar.nextFocus(null));
+                }
+                invalidate();
+            }
+        }
+
+        private MenuBar2 getMenuBar() {
+            return menuBar;
+        }
+
+        @Override
+        public boolean isInvalid() {
+            return super.isInvalid() || menuBar.isInvalid();
+        }
+
+        @Override
+        public void invalidate() {
+            super.invalidate();
+            menuBar.invalidate();
+        }
+
+        @Override
+        public void updateLookupMap(InteractableLookupMap interactableLookupMap) {
+            super.updateLookupMap(interactableLookupMap);
+            menuBar.updateLookupMap(interactableLookupMap);
+        }
+
         @Override
         public void setComponent(Component component) {
             if(getComponent() == component) {
@@ -396,6 +427,12 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
 
                 @Override
                 public void drawComponent(TextGUIGraphics graphics, Container component) {
+                    if (!(menuBar instanceof EmptyMenuBar)) {
+                        TextGUIGraphics menuGraphics = graphics.newTextGraphics(TerminalPosition.TOP_LEFT_CORNER, graphics.getSize().withRows(1));
+                        menuBar.draw(menuGraphics);
+                        graphics = graphics.newTextGraphics(TerminalPosition.TOP_LEFT_CORNER.withRelativeRow(1), graphics.getSize().withRelativeRows(-1));
+                    }
+
                     Component subComponent = getComponent();
                     if(subComponent == null) {
                         return;
@@ -418,6 +455,16 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
         @Override
         public BasePane getBasePane() {
             return AbstractBasePane.this;
+        }
+    }
+
+    private static class EmptyMenuBar extends MenuBar2 {
+        @Override
+        public synchronized void onAdded(Container container) {
+        }
+
+        @Override
+        public synchronized void onRemoved(Container container) {
         }
     }
 }

@@ -24,6 +24,7 @@ class DefaultTheme extends PropertyTheme {
     }
 
     private static final String definition = "# This is the default properties\n" +
+            "# If you want to modify this theme, you must do so both here and in DefaultTheme.java\n" +
             "\n" +
             "foreground = black\n" +
             "background = white\n" +
@@ -126,6 +127,10 @@ class DefaultTheme extends PropertyTheme {
             "# List boxes default\n" +
             "com.googlecode.lanterna.gui2.AbstractListBox.foreground[INSENSITIVE] = black\n" +
             "com.googlecode.lanterna.gui2.AbstractListBox.background[INSENSITIVE] = white\n" +
+            "\n" +
+            "# Menu\n" +
+            "com.googlecode.lanterna.gui2.menu.MenuItem.foreground[ACTIVE] = red\n" +
+            "com.googlecode.lanterna.gui2.menu.MenuItem.background[ACTIVE] = white\n" +
             "\n" +
             "# ProgressBar\n" +
             "com.googlecode.lanterna.gui2.ProgressBar.foreground = white\n" +

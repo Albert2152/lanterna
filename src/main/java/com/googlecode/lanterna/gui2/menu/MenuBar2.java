@@ -1,14 +1,15 @@
 package com.googlecode.lanterna.gui2.menu;
 
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.gui2.AbstractComponent;
-import com.googlecode.lanterna.gui2.ComponentRenderer;
-import com.googlecode.lanterna.gui2.TextGUIGraphics;
+import com.googlecode.lanterna.gui2.*;
+import com.googlecode.lanterna.input.KeyStroke;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class MenuBar2 extends AbstractComponent<MenuBar2> {
+public class MenuBar2 extends AbstractComponent<MenuBar2> implements Container {
     private static final int EXTRA_PADDING = 1;
     private final List<Menu2> menus;
 
@@ -18,7 +19,69 @@ public class MenuBar2 extends AbstractComponent<MenuBar2> {
 
     public MenuBar2 add(Menu2 menu) {
         menus.add(menu);
+        menu.onAdded(this);
         return this;
+    }
+
+    @Override
+    public int getChildCount() {
+        return getMenuCount();
+    }
+
+    @Override
+    public Collection<Component> getChildren() {
+        return new ArrayList<Component>(menus);
+    }
+
+    @Override
+    public boolean containsComponent(Component component) {
+        return menus.contains(component);
+    }
+
+    @Override
+    public synchronized boolean removeComponent(Component component) {
+        boolean hadMenu = menus.remove(component);
+        if (hadMenu) {
+            component.onRemoved(this);
+        }
+        return hadMenu;
+    }
+
+    @Override
+    public synchronized Interactable nextFocus(Interactable fromThis) {
+        if (menus.isEmpty()) {
+            return null;
+        }
+        else if (fromThis == null) {
+            return menus.get(0);
+        }
+        else if (!menus.contains(fromThis) || menus.indexOf(fromThis) == menus.size() - 1) {
+            return null;
+        }
+        else {
+            return menus.get(menus.indexOf(fromThis) + 1);
+        }
+    }
+
+    @Override
+    public Interactable previousFocus(Interactable fromThis) {
+        if (menus.isEmpty()) {
+            return null;
+        }
+        else if (fromThis == null) {
+            return menus.get(menus.size() - 1);
+        }
+        else if (!menus.contains(fromThis) || menus.indexOf(fromThis) == 0) {
+            return null;
+        }
+        else {
+            return menus.get(menus.indexOf(fromThis) - 1);
+        }
+    }
+
+    @Override
+    public boolean handleInput(KeyStroke key) {
+        return false;
     }
 
     public Menu2 getMenu(int index) {
@@ -32,6 +95,13 @@ public class MenuBar2 extends AbstractComponent<MenuBar2> {
     @Override
     protected ComponentRenderer<MenuBar2> createDefaultRenderer() {
         return new DefaultMenuBarRenderer();
+    }
+
+    @Override
+    public synchronized void updateLookupMap(InteractableLookupMap interactableLookupMap) {
+        for (Menu2 menu: menus) {
+            interactableLookupMap.add(menu);
+        }
     }
 
     public class DefaultMenuBarRenderer implements ComponentRenderer<MenuBar2> {

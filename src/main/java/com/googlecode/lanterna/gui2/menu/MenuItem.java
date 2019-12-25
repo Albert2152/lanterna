@@ -3,6 +3,7 @@ package com.googlecode.lanterna.gui2.menu;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TerminalTextUtils;
+import com.googlecode.lanterna.graphics.ThemeDefinition;
 import com.googlecode.lanterna.gui2.AbstractInteractableComponent;
 import com.googlecode.lanterna.gui2.InteractableRenderer;
 import com.googlecode.lanterna.gui2.TextGUIGraphics;
@@ -54,8 +55,20 @@ public class MenuItem extends AbstractInteractableComponent<MenuItem> {
         }
 
         @Override
-        public void drawComponent(TextGUIGraphics graphics, MenuItem component) {
-            graphics.putString(0, 0, component.getLabel());
+        public void drawComponent(TextGUIGraphics graphics, MenuItem menu) {
+            ThemeDefinition themeDefinition = menu.getThemeDefinition();
+            if (menu.isFocused()) {
+                graphics.applyThemeStyle(themeDefinition.getSelected());
+            }
+            else {
+                graphics.applyThemeStyle(themeDefinition.getNormal());
+            }
+            String label = menu.getLabel();
+            graphics.putString(0, 0, label);
+            if (!label.isEmpty()) {
+                graphics.applyThemeStyle(themeDefinition.getActive());
+                graphics.putString(0, 0, label.substring(0, 1));
+            }
         }
     }
 }
