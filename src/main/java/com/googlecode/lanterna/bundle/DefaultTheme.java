@@ -129,8 +129,9 @@ class DefaultTheme extends PropertyTheme {
             "com.googlecode.lanterna.gui2.AbstractListBox.background[INSENSITIVE] = white\n" +
             "\n" +
             "# Menu\n" +
-            "com.googlecode.lanterna.gui2.menu.MenuItem.foreground[ACTIVE] = red\n" +
-            "com.googlecode.lanterna.gui2.menu.MenuItem.background[ACTIVE] = white\n" +
+            "com.googlecode.lanterna.gui2.menu.MenuItem.foreground[PRELIGHT] = green\n" +
+            "com.googlecode.lanterna.gui2.menu.MenuItem.background[PRELIGHT] = white\n" +
+            "com.googlecode.lanterna.gui2.menu.MenuItem.foreground[ACTIVE] = green\n" +
             "\n" +
             "# ProgressBar\n" +
             "com.googlecode.lanterna.gui2.ProgressBar.foreground = white\n" +

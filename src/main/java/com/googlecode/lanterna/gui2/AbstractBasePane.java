@@ -126,6 +126,7 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
         else if(focusedInteractable == null) {
             // If nothing is focused and the user presses certain navigation keys, try to find if there is an
             // Interactable component we can move focus to.
+            MenuBar2 menuBar = getMenuBar();
             Component baseComponent = getComponent();
             Interactable.FocusChangeDirection direction = Interactable.FocusChangeDirection.TELEPORT;
             Interactable nextFocus = null;
@@ -134,11 +135,14 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
                 case ArrowRight:
                 case ArrowDown:
                     direction = Interactable.FocusChangeDirection.NEXT;
-                    if (baseComponent instanceof Container) {
-                        nextFocus = ((Container) baseComponent).nextFocus(null);
-                    }
-                    else if (baseComponent instanceof Interactable) {
-                        nextFocus = (Interactable) baseComponent;
+                    // First try the menu, then the actual component
+                    nextFocus = menuBar.nextFocus(null);
+                    if (nextFocus == null) {
+                        if (baseComponent instanceof Container) {
+                            nextFocus = ((Container) baseComponent).nextFocus(null);
+                        } else if (baseComponent instanceof Interactable) {
+                            nextFocus = (Interactable) baseComponent;
+                        }
                     }
                     break;
 
@@ -151,6 +155,10 @@ public abstract class AbstractBasePane<T extends BasePane> implements BasePane {
                     }
                     else if (baseComponent instanceof Interactable) {
                         nextFocus = (Interactable) baseComponent;
+                    }
+                    // If no component can take focus, try the menu
+                    if (nextFocus == null) {
+                        nextFocus = menuBar.previousFocus(null);
                     }
                     break;
             }

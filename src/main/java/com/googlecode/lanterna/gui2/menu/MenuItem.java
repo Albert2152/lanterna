@@ -46,7 +46,7 @@ public class MenuItem extends AbstractInteractableComponent<MenuItem> {
     public static class DefaultMenuItemRenderer extends MenuItemRenderer {
         @Override
         public TerminalPosition getCursorLocation(MenuItem component) {
-            return TerminalPosition.TOP_LEFT_CORNER;
+            return null;
         }
 
         @Override
@@ -55,18 +55,23 @@ public class MenuItem extends AbstractInteractableComponent<MenuItem> {
         }
 
         @Override
-        public void drawComponent(TextGUIGraphics graphics, MenuItem menu) {
-            ThemeDefinition themeDefinition = menu.getThemeDefinition();
-            if (menu.isFocused()) {
+        public void drawComponent(TextGUIGraphics graphics, MenuItem menuItem) {
+            ThemeDefinition themeDefinition = menuItem.getThemeDefinition();
+            if (menuItem.isFocused()) {
                 graphics.applyThemeStyle(themeDefinition.getSelected());
             }
             else {
                 graphics.applyThemeStyle(themeDefinition.getNormal());
             }
-            String label = menu.getLabel();
+            String label = menuItem.getLabel();
             graphics.putString(0, 0, label);
             if (!label.isEmpty()) {
-                graphics.applyThemeStyle(themeDefinition.getActive());
+                if (menuItem.isFocused()) {
+                    graphics.applyThemeStyle(themeDefinition.getActive());
+                }
+                else {
+                    graphics.applyThemeStyle(themeDefinition.getPreLight());
+                }
                 graphics.putString(0, 0, label.substring(0, 1));
             }
         }
